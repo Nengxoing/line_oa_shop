@@ -1,0 +1,290 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    .market-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    .btn.active {
+        background-color: var(--second-color);
+        color: white !important;
+    }
+
+    .btn:focus {
+        color: white !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+    style="background-color: #276FB7;">
+    <button onclick="window.location.href='/line_oa_shop'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <button id="cardButton" class="text-white"
+        style="background-color: transparent; outline: none; border: none; margin-right: .5rem;">
+        <i class="bi bi-cart-fill fs-4" style="color: #276FB7;"></i>
+    </button>
+</header>
+
+<main class="d-flex flex-column gap-2 p-2 justify-content-between">
+    {% if product_data %}
+    <div class="card shadow-sm border-0">
+        {% set image_url = '/static/image/product/' ~ product_data.url_image if product_data.url_image else
+        '/static/odm.png' %}
+        <!-- <img src="{{ image_url }}" class="card-img-top" alt="{{ product_data.name_market }}"> -->
+        <img id="productImage" src="{{ image_url }}" class="card-img-top" alt="{{ product_data.name_market }}">
+
+        <div class="card-body">
+
+            <h5 id="productCode" hidden>{{ product_data.code }}</h5>
+            <h5 id="productName" class="card-title fw-bold">{{ product_data.name_market }}</h5>
+
+            <p class="mb-1 mt-3">
+                <strong>ຍີ່ຫໍ້:</strong> <span id="productBrand">{{ product_data.item_brand or '---' }}</span>
+            </p>
+
+            <p class="mb-2">
+                <strong>ສະຕັອກ:</strong>
+                <span class="badge {{ 'text-success' if product_data.stock == 'ມີສະຕອກ' else 'text-secondary' }}"
+                    style="font-size: 0.9rem;">{{ product_data.stock or 'ບໍ່ມີສະຕອກ' }}</span>
+            </p>
+
+            <h5 class="mb-2">
+                <!-- <strong>ລາຄາລ່າສຸດ:</strong> -->
+                <span id="productSalePrice" class="text-danger">
+                    {% if product_data.sale_price %}
+                    {{ "{:,.0f}".format(product_data.sale_price) }}
+                    {% else %}
+                    0
+                    {% endif %}
+                </span> ກີບ
+            </h5>
+
+            <p class="mb-4">
+                <!-- <strong>ລາຄາປົກກະຕິ:</strong> -->
+                <s>
+                    <span id="productRegularPrice">
+                        {% if product_data.sale_price %}
+                        {{ "{:,.0f}".format(product_data.sale_price) }}
+                        {% else %}
+                        0
+                        {% endif %}
+                    </span> ກີບ
+                </s>
+            </p>
+
+            <div class="d-flex justify-content-between border rounded bg-white mb-4 quantity-control">
+                <button class="btn-decrease btn text-white fw-medium" style="background-color: var(--second-color);">
+                    <i class="bi bi-caret-left-fill"></i>
+                </button>
+                <input id="qty" type="number" class="qty-input form-control text-center"
+                    style="background-color: transparent; border: none; outline: none;" placeholder="ຈຳນວນ" value="1"
+                    min="1">
+                <button class="btn-increase btn text-white fw-medium" style="background-color: var(--second-color);">
+                    <i class="bi bi-caret-right-fill"></i>
+                </button>
+            </div>
+
+            <button onclick="productDetailData();" class="btn w-100 text-white fw-medium mb-3"
+                style="background-color: var(--second-color);">ສັ່ງຊື້</button>
+
+            <div class="mb-3">
+                <strong>ລາຍລະອຽດໂດຍຫຍໍ້</strong>
+                <div class="border p-2 rounded" style="background-color: #f8f9fa;">
+                    {{ product_data.description | safe if product_data.description else '---' }}
+                </div>
+            </div>
+
+            <div class="btn-group mb-3 w-100" role="group" aria-label="Horizontal buttons">
+                <button class="btn w-100 active"
+                    style="border: 1px solid var(--second-color); color: var(--second-color);" data-bs-toggle="collapse"
+                    data-bs-target="#info1">ລາຍລະອຽດສິນຄ້າ</button>
+                <button class="btn w-100" style="border: 1px solid var(--second-color); color: var(--second-color);"
+                    data-bs-toggle="collapse" data-bs-target="#info2">ສະເພາະສິນຄ້າ</button>
+            </div>
+
+            <div id="infoGroup">
+                <div class="collapse show" id="info1" data-bs-parent="#infoGroup">
+                    <div class="card card-body mb-2" style="max-height: 400px; overflow-y: auto;">
+                        {% if product_des %}
+                        {% for des in product_des %}
+                        {{ des.description | safe }}
+                        {% endfor %}
+                        {% else %}
+                        <p>ບໍ່ມີຂໍ້ມູນ</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="collapse" id="info2" data-bs-parent="#infoGroup">
+                    <div class="card card-body mb-2" style="max-height: 400px; overflow-y: auto;">
+                        {% if product_detail %}
+                        <ul class="list-group list-group-flush">
+                            {% for item in product_detail %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ item.name_1 }}</span>
+                                <span>{{ item.name_2 }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>ບໍ່ມີຂໍ້ມູນລາຍລະອຽດ</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="d-none fw-medium mb-2">ສິນຄ້າທີ່ກ່ຽວຂ້ອງ</h5>
+            <div id="related-product-container" class="d-none " onclick="productDetail(event)">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    {% for data in related_products %}
+                    <div class="product-item col d-flex justify-content-between flex-column gap-2 p-1 border rounded shadow-sm bg-white"
+                        data-code="{{ data.code }}">
+                        <div>
+                            {% if data.url_image == None %}
+                            <img class="product-img" src="/static/odm.png" alt="img"
+                                style="width: 100%; height: auto; object-fit: cover;">
+                            {% else %}
+                            <img class="product-img" src="/static/image/product/{{ data.url_image }}" alt="img"
+                                style="width: 100%; height: auto; object-fit: cover;">
+                            {% endif %}
+
+                            <p hidden class="name-code" id="code" style="font-size: 14px;">{{ data.code }}</p>
+                            <p class="name-market" style="font-size: 14px;">{{ data.name_market }}</p>
+                            <p class="sale-price text-danger fw-medium mt-1">
+                                <b class="sale_price">{{ "{:,}".format(data.sale_price) }}</b> KIP
+                            </p>
+                            <p class="regular-price" style="font-size: 14px;">
+                                <s id="regular_price">{{ "{:,}".format(data.regular_price) }}</s> KIP
+                            </p>
+                        </div>
+                        <button class="btn w-100 text-white fw-medium add-to-cart-btn"
+                            style="background-color: var(--second-color);" data-bs-toggle="modal"
+                            data-bs-target="#selectQty"
+                            data-img="{{ '/static/image/product/' + data.url_image if data.url_image else '/static/odm.png' }}"
+                            data-name="{{ data.name_market }}" data-sale-price="{{ " {:,}".format(data.sale_price) }}"
+                            data-regular-price="{{ " {:,}".format(data.regular_price) }}" data-code="{{ data.code }}">
+                            ເພີ່ມເຂົ້າກະຕ່າ
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger text-center">
+        ບໍ່ພົບຂໍ້ມູນສິນຄ້າ
+    </div>
+    {% endif %}
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const qtyInput = document.querySelector(".qty-input");
+        const btnIncrease = document.querySelector(".btn-increase");
+        const btnDecrease = document.querySelector(".btn-decrease");
+
+        btnIncrease.addEventListener("click", () => {
+            let currentQty = parseInt(qtyInput.value) || 1;
+            qtyInput.value = currentQty + 1;
+        });
+
+        btnDecrease.addEventListener("click", () => {
+            let currentQty = parseInt(qtyInput.value) || 1;
+            if (currentQty > 1) {
+                qtyInput.value = currentQty - 1;
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll('.btn-group .btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                buttons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+
+    // function productDetailData() {
+    //     const ids = ["productCode", "productName", "productSalePrice", "productRegularPrice", "productBrand"];
+    //     const elements = ids.map(id => document.getElementById(id));
+
+    //     if (elements.includes(null)) {
+    //         console.error("One or more product elements not found.");
+    //         return;
+    //     }
+
+    //     const [productCode, productName, productSalePrice, productRegularPrice, productBrand] =
+    //         elements.map(el => el.textContent.trim());
+
+    //     const qty = document.getElementById("qty")?.value || 0;
+
+    //     console.log({ productCode, productName, productSalePrice, productRegularPrice, productBrand, qty });
+    // }
+
+    function productDetailData() {
+        const ids = ["productCode", "productName", "productSalePrice"];
+        const [productCodeEl, productNameEl, productSalePriceEl] = ids.map(id => document.getElementById(id));
+        const qty = parseInt(document.getElementById("qty")?.value || 1);
+        const imagePath = document.getElementById("productImage")?.getAttribute("src") || "";
+
+        if (!productCodeEl || !productNameEl || !productSalePriceEl || !imagePath) {
+            Swal.fire("เกิดข้อผิดพลาด", "ข้อมูลสินค้าหายไปบางส่วน", "error");
+            return; 
+        }
+
+        const data = {
+            code: productCodeEl.textContent.trim(),
+            name: productNameEl.textContent.trim(),
+            sale_price: productSalePriceEl.textContent.trim(),
+            image: imagePath,
+            qty: qty
+        };
+
+        console.log("Product detail data:", data)
+
+        fetch("/addToCard", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "ສຳເລັດ",
+                        text: 'ເພີ່ມສິນຄ້າເຂົ້າກະຕ່າແລ້ວ!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire("เกิดข้อผิดพลาด", result.message, "error");
+                }
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+                Swal.fire("ขัดข้อง", "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้", "warning");
+            });
+    }
+</script>
+{% endblock %}

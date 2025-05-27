@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>เลือกที่อยู่ด้วยแมพ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #mapPlaceholder {
+            background-image: url('https://img.icons8.com/clouds/500/maps.png');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px dashed #9d4edd;
+        }
+
+        .btn-purple {
+            background-color: #9d4edd;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background-color: #7b2cbf;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-5">
+        <h3 class="text-center mb-4">📌 เลือกตำแหน่งที่อยู่</h3>
+
+        <!-- รูปแทนแผนที่ -->
+        <div id="mapPlaceholder" class="mb-3 d-flex align-items-center justify-content-center">
+            <h5 class="text-white bg-dark bg-opacity-50 p-2 rounded">กดที่นี่เพื่อเลือกตำแหน่ง</h5>
+        </div>
+
+        <!-- ที่อยู่ที่เลือก -->
+        <div class="mb-3">
+            <label class="form-label">📍 ที่อยู่ที่เลือก:</label>
+            <input type="text" id="selectedAddress" class="form-control" readonly>
+        </div>
+
+        <!-- ปุ่มดูใน Google Maps -->
+        <div class="text-center">
+            <a id="openInMaps" class="btn btn-purple" href="#" target="_blank" style="display:none;">
+                🔍 เปิดดูใน Google Maps
+            </a>
+        </div>
+    </div>
+
+    <!-- Google Maps API -->
+    <script>
+        let geocoder;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            geocoder = new google.maps.Geocoder();
+
+            document.getElementById("mapPlaceholder").addEventListener("click", () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        const latlng = { lat, lng };
+
+                        geocoder.geocode({ location: latlng }, (results, status) => {
+                            if (status === "OK" && results[0]) {
+                                const address = results[0].formatted_address;
+
+                                document.getElementById("selectedAddress").value = address;
+
+                                // เปิดลิงก์ดูใน Google Maps ได้
+                                const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                                const link = document.getElementById("openInMaps");
+                                link.href = mapsUrl;
+                                link.style.display = "inline-block";
+                            } else {
+                                alert("ไม่สามารถค้นหาที่อยู่ได้");
+                            }
+                        });
+                    }, () => {
+                        alert("ไม่สามารถดึงตำแหน่งของคุณได้");
+                    });
+                } else {
+                    alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+                }
+            });
+        });
+    </script>
+
+    <!-- ใส่ API KEY ที่ถูกต้อง -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH2TwvYqjeUu0XZL63nT-FOETUYMwnAkM&libraries=places">
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,383 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    .market-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    #googleMap {
+        height: 400px;
+        width: 100%;
+    }
+
+    #googleMap .gm-style {
+        z-index: 0 !important;
+    }
+
+    #googleMap .custom-map-button {
+        z-index: 1000 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+    style="background-color: #276FB7;">
+    <button onclick="window.location.href='/line_oa_shop'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <button id="cardButton" class="text-white"
+        style="background-color: transparent; outline: none; border: none; margin-right: .5rem;">
+        <i class="bi bi-cart-fill fs-4" style="color: #276FB7;"></i>
+    </button>
+</header>
+
+<main class="d-flex flex-column gap-2 p-2 justify-content-between">
+    <div class="d-flex flex-column gap-3">
+
+        <!-- <h5 class="fw-medium">ກະຕ່າຂອງຂ້ອຍ</h5> -->
+
+        <div class="mt-1">
+            <label for="" class="fw-medium mb-1">ຂໍ້ມູນຜູ້ຮັບ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="d-flex justify-content-between">
+                    <p>ຊື່ຜູ້ຮັບ</p>
+                    <p id="receiver-name">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ເບີໂທ</p>
+                    <p id="receiver-phone">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ທີ່ຢູ່</p>
+                    <p id="receiver-address">---</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ປະເພດການຈັດສົ່ງ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="shippingType" id="shipping-type-delivery"
+                        value="0" checked>
+                    <label class="form-check-label" for="shipping-type-delivery">
+                        ຈັດສົ່ງ
+                    </label>
+                </div>
+                <hr class="p-0 my-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="shippingType" id="shipping-type-pickup"
+                        value="1">
+                    <label class="form-check-label" for="shipping-type-pickup">
+                        ຮັບເອງ
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row" id="show_ad">
+            <div class="d-flex justify-content-between mb-2">
+                <p class="fw-medium">ທີ່ຢູ່</p>
+                <a href="/location_mb" data-bs-toggle="modall" data-bs-target="#address_modall"
+                    style="text-transform: capitalize;color: #707070 !important;cursor: pointer; text-decoration: none; color: #333;">
+                    <?xml version="1.0" encoding="utf-8"?>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="17" height="17">
+                        <path
+                            d="M36 5.0097656C34.205301 5.0097656 32.410791 5.6901377 31.050781 7.0507812L8.9160156 29.183594C8.4960384 29.603571 8.1884588 30.12585 8.0253906 30.699219L5.0585938 41.087891 A 1.50015 1.50015 0 0 0 6.9121094 42.941406L17.302734 39.974609 A 1.50015 1.50015 0 0 0 17.304688 39.972656C17.874212 39.808939 18.39521 39.50518 18.816406 39.083984L40.949219 16.949219C43.670344 14.228094 43.670344 9.7719064 40.949219 7.0507812C39.589209 5.6901377 37.794699 5.0097656 36 5.0097656 z M 36 7.9921875C37.020801 7.9921875 38.040182 8.3855186 38.826172 9.171875 A 1.50015 1.50015 0 0 0 38.828125 9.171875C40.403 10.74675 40.403 13.25325 38.828125 14.828125L36.888672 16.767578L31.232422 11.111328L33.171875 9.171875C33.957865 8.3855186 34.979199 7.9921875 36 7.9921875 z M 29.111328 13.232422L34.767578 18.888672L16.693359 36.962891C16.634729 37.021121 16.560472 37.065723 16.476562 37.089844L8.6835938 39.316406L10.910156 31.521484 A 1.50015 1.50015 0 0 0 10.910156 31.519531C10.933086 31.438901 10.975086 31.366709 11.037109 31.304688L29.111328 13.232422 z"
+                            fill="#707070" />
+                    </svg> ເລືອກທີ່ຢູ່
+                </a>
+            </div>
+
+            <table>
+                <iframe src="//maps.google.com/maps?q={{lat}},{{lng}}&z=15&output=embed"></iframe>
+            </table>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ລາຍການສິນຄ້າ</label>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <div id="products-list" class="d-flex flex-column gap-3"></div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ລາຄາ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="d-flex justify-content-between">
+                    <p>ລວມລາຄາສິນຄ້າ</p>
+                    <p id="allProductsPrice">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ຄ່າຂົນສົ່ງ</p>
+                    <p id="shippingPrice">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ລວມທັງໝົດ</p>
+                    <p id="allPrice">---</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ໝາຍເຫດ</label>
+            <div class="border bg-white rounded p-2 mb-0 pb-0">
+                <ul style="padding-left: 20px;">
+                    <li style="color: #555;">ສິນຄ້າຊື້ແລ້ວ ບໍສາມາດສົ່ງຄືນໃດ້</li>
+                    <li style="color: #555;">ການຄິດໃລ່ຄ່າຂົນສົ່ງແມ່ນຂື້ນກັບໄລຍາທາງ</li>
+                    <li style="color: #555;">ກະລຸນາກວດສອບລາຍການສິນຄ້າໃຫ້ລະອຽດກ່ອນສັ່ງຊື້</li>
+                </ul>
+            </div>
+        </div>
+
+        <button onclick="sendDataToServer()" class="btn text-white fw-medium mb-3"
+            style="background-color: var(--first-color);">ສັ່ງຊື້ ແລະ ຈ່າຍເງິນ</button>
+    </div>
+</main>
+
+<script>
+
+    function show1() {
+        document.getElementById('show_ad').style.display = 'none';
+        document.getElementById('ser_type').value = 0
+
+    }
+
+    function show2() {
+        document.getElementById('show_ad').style.display = 'block';
+        document.getElementById('ser_type').value = 1
+    }
+
+    function showSavedLocation() {
+        const lat = parseFloat(document.getElementById("latInput").value);
+        const lng = parseFloat(document.getElementById("lngInput").value);
+
+        if (isNaN(lat) || isNaN(lng)) {
+            alert("ຍັງບໍ່ໄດ້ເລືອກຕຳແໜ່ງໃດໆ");
+            return;
+        }
+
+        const savedLocation = new google.maps.LatLng(lat, lng);
+
+        map.setCenter(savedLocation);
+        map.setZoom(16);
+
+        if (marker) {
+            marker.setMap(null);
+        }
+
+        marker = new google.maps.Marker({
+            position: savedLocation,
+            map: map
+        });
+    }
+
+    window.addEventListener("load", function () {
+        card_detail_get();
+    });
+
+    google.maps.event.addDomListener(window, "load", myMap);
+
+    // ******************************************* products list *******************************************
+    function addDeleteEventListeners() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', deleteItemCard);
+        });
+    }
+
+    function card_detail_get() {
+        fetch("/card_detail_get")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+
+                    console.log("Card detail:", data);
+
+                    const productList = document.getElementById("products-list");
+                    productList.innerHTML = "";
+
+                    document.getElementById("receiver-name").textContent = (data.user?.name || "---");
+                    document.getElementById("receiver-phone").textContent = (data.user?.phone || "---");
+                    document.getElementById("receiver-address").textContent = (data.user?.address || "---");
+
+                    let totalProductPrice = 0;
+                    const shippingPrice = 50000;
+
+                    if (data.cart.length === 0) {
+                        document.getElementById("allProductsPrice").textContent = "---";
+                        document.getElementById("shippingPrice").textContent = "---";
+                        document.getElementById("allPrice").textContent = "---";
+                        return;
+                    }
+
+                    data.cart.forEach(item => {
+                        const imgSrc = item.image ? `/static/image/product/${item.image}` : `/static/odm.png`;
+                        const name = item.name;
+                        const price = parseFloat(item.sale_price.replace(/,/g, '')) || 0;
+                        const qty = parseInt(item.qty) || 0;
+                        const formattedPrice = formatPrice(price);
+                        const code = item.market_code;
+
+                        console.log("price:", price);
+
+                        totalProductPrice += price * qty;
+
+                        const productHTML = `
+                        <div class="bg-white border rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 110px; position: relative;">
+                            <img src="${imgSrc}" alt=""
+                                onerror="this.onerror=null; this.src='/static/odm.png'; this.style.width='100%'; this.style.height='100%'; this.style.objectFit='cover';"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="py-2 px-2 d-flex flex-column justify-content-between">
+                                <p class="market-name" style="margin-right: 10px;">${name}</p>
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <p class="text-danger mb-0 text-start"><b>${formattedPrice} KIP</b></p>
+                                    <p style="font-size: 14px; color: #666;">ຈຳນວນ: <span class="qty">${qty}</span></p>
+                                </div>
+                            </div>
+                            <button class="text-danger delete-btn" data-code="${code}" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;">
+                                <i class="bi bi-x-square-fill"></i>
+                            </button>
+                        </div>`;
+
+                        productList.innerHTML += productHTML;
+                    });
+
+                    const formattedProductTotal = formatPrice(totalProductPrice);
+                    const formattedShipping = shippingPrice > 0 ? formatPrice(shippingPrice) : "---";
+                    const totalAll = totalProductPrice + shippingPrice;
+                    const formattedTotalAll = formatPrice(totalAll);
+
+                    document.getElementById("allProductsPrice").textContent = formattedProductTotal + " KIP";
+                    document.getElementById("shippingPrice").textContent = formattedShipping + " KIP";
+                    document.getElementById("allPrice").textContent = formattedTotalAll + " KIP";
+
+                    addDeleteEventListeners();
+                } else {
+                    console.error("โหลดข้อมูลไม่สำเร็จ");
+                }
+            })
+            .catch(error => {
+                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
+            });
+    }
+
+    function formatPrice(price) {
+        return Number(price).toLocaleString('en-US', {
+            minimumFractionDigits: 0
+        });
+    }
+
+    function deleteItemCard(event) {
+        const deleteButton = event.target.closest('.delete-btn');
+        if (!deleteButton) return;
+
+        const marketCode = deleteButton.getAttribute('data-code');
+
+        const productItem = deleteButton.closest('.bg-white');
+        if (productItem) {
+            productItem.remove();
+        }
+
+        fetch('/deleteItemCard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code: marketCode })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "deleted") {
+                    console.log("สินค้าถูกลบเรียบร้อยแล้ว");
+                    card_detail_get();
+                } else {
+                    console.error("ไม่สามารถลบสินค้าได้");
+                }
+            })
+            .catch(error => {
+                console.error("เกิดข้อผิดพลาดในการลบสินค้า:", error);
+            });
+    }
+
+    function sendDataToServer() {
+        const receiverName = document.getElementById("receiver-name").textContent;
+        const receiverPhone = document.getElementById("receiver-phone").textContent;
+        const receiverAddress = document.getElementById("receiver-address").textContent;
+        const lngInput = document.getElementById("lngInput").value;
+        const latInput = document.getElementById("latInput").value;
+        const shippingType = parseInt(document.querySelector('input[name="shippingType"]:checked').value);
+
+        console.log("receiver-name:", receiverName);
+        console.log("receiver-phone:", receiverPhone);
+        console.log("receiver-address:", receiverAddress);
+        console.log("shippingType:", shippingType);
+        console.log("lngInput:", lngInput);
+        console.log("latInput:", latInput);
+
+        const productList = document.getElementById("products-list");
+        const productsData = [];
+
+        const productElements = productList.querySelectorAll('.bg-white');
+
+        productElements.forEach(item => {
+            const name = item.querySelector('.market-name').textContent;
+            const price = item.querySelector('.text-danger').textContent.replace(' KIP', '').replace(/,/g, '');
+            const qty = item.querySelector('.qty').textContent;
+            const imagePath = item.querySelector('img').src;
+
+            const imageName = imagePath.split('/').pop();
+
+            productsData.push({
+                name: name,
+                price: parseFloat(price),
+                qty: parseInt(qty),
+                image: imageName
+            });
+        });
+
+        const allProductsPrice = document.getElementById("allProductsPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+        const shippingPrice = document.getElementById("shippingPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+        const allPrice = document.getElementById("allPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+
+        console.log("allProductsPrice:", allProductsPrice);
+        console.log("shippingPrice:", shippingPrice);
+        console.log("allPrice:", allPrice);
+
+        const dataToSend = {
+            receiverName: receiverName,
+            receiverPhone: receiverPhone,
+            receiverAddress: receiverAddress,
+            shippingType: shippingType,
+            products: productsData,
+            allProductsPrice: parseFloat(allProductsPrice),
+            shippingPrice: parseFloat(shippingPrice),
+            allPrice: parseFloat(allPrice)
+        };
+
+        console.log("dataToSend:", dataToSend);
+    }
+</script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjGLurUwa1Dg_V8WOaGca4ggLCWVG02IE&libraries=places" async defer></script> -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH2TwvYqjeUu0XZL63nT-FOETUYMwnAkM&libraries=places" async
+    defer></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<div class="p-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+    {% for data in products_data %}
+    <div class="col d-flex justify-content-between flex-column gap-2 p-1 border rounded shadow-sm bg-white">
+        <div>
+            {% if data.url_image == None %}
+            <img class="product-img" src="/static/odm.png" alt="img"
+                style="width: 100%; height: auto; object-fit: cover;">
+            {% else %}
+            <img class="product-img" src="/static/image/product/{{data.url_image}}" alt="img"
+                style="width: 100%; height: auto; object-fit: cover;">
+            {% endif %}
+
+            <p hidden class="name-code" style="font-size: 14px;">{{ data['code'] }}</p>
+            <p class="name-market" style="font-size: 14px;">{{ data['name_market'] }}</p>
+            <p class="sale-price text-danger fw-medium mt-1"><b class="sale_price">{{"{:,}".format(data.sale_price) }}</b> KIP</p>
+            <p class="regular-price" style="font-size: 14px;"><s id="regular_price">{{"{:,}".format(data.regular_price) }}</s> KIP</p>
+        </div>
+        <button class="btn w-100 text-white fw-medium add-to-cart-btn" style="background-color: var(--second-color);"
+            data-bs-toggle="modal" data-bs-target="#selectQty"
+            data-img="{{ '/static/image/product/' + data.url_image if data.url_image else '/static/odm.png' }}"
+            data-name="{{ data.name_market }}" data-sale-price="{{ " {:,}".format(data.sale_price) }}"
+            data-regular-price="{{ " {:,}".format(data.regular_price) }}" data-code="{{ data.code }}">
+            ເພີ່ມເຂົ້າກະຕ່າ
+        </button>
+    </div>
+    {% endfor %}
+</div>

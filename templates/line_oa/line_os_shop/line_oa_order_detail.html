@@ -1,0 +1,79 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}Order list{% endblock %}
+
+{% block head %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+        style="background-color: #276FB7;">
+        <button onclick="window.location.href='/line_oa_order_list'"
+            class="d-flex justify-content-between align-items-center" type="button"
+            style="background-color: transparent; outline: none; border: none;">
+            <i class="bi bi-chevron-left fs-5 text-white"></i>
+            <span class="text-white">ກັບຄືນ</span>
+        </button>
+        <p class="text-white">ລາຍລະອຽດການສັ່ງຊື້</p>
+            <button class="d-flex justify-content-between align-items-center" type="button"
+                style="background-color: transparent; outline: none; border: none; color: #276FB7;">
+                <i class="bi bi-chevron-left fs-5"></i>
+                <span>ກັບຄືນ</span>
+            </button>
+    </header>
+
+    <div class="d-flex flex-column gap-3 m-2">
+
+        {% if order_detail %}
+
+        <div>
+            <label class="fw-medium mb-1">ລາຍລະອຽດ</label>
+            <div class="border rounded bg-white p-2">
+                <p>ເລກສັ່ງຊື້: <span>{{ order_detail[0].doc_no }}</span></p>
+                <p>ລວມລາຄາ: <span class="text-danger">{{ "{:,.0f}".format(total_amount_2[0].total_amount_2) }} KIP</span></p>
+                <p>ຈຳນວນ: <span>{{ product_qty[0].total_qty | int }}</span></p>
+                <p>ສະຖານະ: <span class="text-success">ສຳເລັດແລ້ວ</span></p>
+                <p>ວັນທີ່ສັ່ງຊື້: <span>{{ order_detail[0].doc_date.strftime('%d/%m/%Y') }}</span></p>
+            </div>
+        </div>
+
+        <div>
+            <label class="fw-medium mb-1">ລາຍການສິນຄ້າ</label>
+            <div class="d-flex flex-column gap-3">
+                {% for data in order_detail %}
+                <div class="border rounded bg-white p-2" style="display: grid; grid-template-columns: 30% 1fr; column-gap: .5rem; ">
+
+                    <div>
+                        {% if data.url_image is none %}
+                        <img class="product-img" src="/static/odm.png" alt="img"
+                            style="width: 100%; height: auto; object-fit: cover;">
+                        {% else %}
+                        <img class="product-img" src="/static/image/product/{{ data.url_image }}" alt="img"
+                            style="width: 100%; height: auto; object-fit: cover;">
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex flex-column gap-2">
+                        <p>{{ data.item_name or "ບໍ່ມີຊື່ສິນຄ້າ" }}</p>
+
+                        <div>
+                            <p>ລາຄາ: <span class="text-danger">{{ "{:,.0f}".format(data['price_2']) }} KIP</span></p>
+
+                            <p>ຈຳນວນ: <span>{{ data.qty | int }}</span></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-muted mt-5">ບໍ່ພົບລາຍການສັ່ງຊື້</p>
+        {% endif %}
+    </div>
+
+</main>
+{% endblock %}

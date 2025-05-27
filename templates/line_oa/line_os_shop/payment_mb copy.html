@@ -1,0 +1,109 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    .waiting-payment {
+    font-weight: bold;
+    animation: shimmer 2s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0%   { color: rgb(255, 0, 102); }
+    25%  { color: rgb(255, 153, 51); }
+    50%  { color: rgb(0, 204, 255); }
+    75%  { color: rgb(153, 51, 255); }
+    100% { color: rgb(255, 0, 102); }
+  }
+
+  .button-pay:hover {
+    cursor: pointer;  
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+    style="background-color: #ef0000;">
+    <button onclick="window.location.href='/card_detail'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <p class="text-white"><b>ສະແກນ QR Code</b></p>
+
+    <button class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none; color: #ef0000;">
+        <i class="bi bi-chevron-left fs-5"></i>
+        <span>ກັບຄືນ</span>
+    </button>
+</header>
+
+<main class="d-flex flex-column justify-content-between" style="height: 87vh;">
+    <div class="p-2 d-flex flex-column gap-4 justify-content-between align-items-center">
+        <div class="text-center mt-2 mb-3" style="line-height: 3rem;">
+            <p class="waiting-payment">ກຳລັງລໍຖ້າການຊຳລະ</p>
+
+            <p class="fw-bold">ເລກສັ່ງຊື້: <span class="fw-medium">CSEF35738534</span></p>
+
+            <p><b>ເວລາການຊຳລະ:</b> <span id="timeToPay">5:00</span></p>
+        </div>
+        
+        <h1 class="mb-4"><b>ODIEN MALL ONLINE</b></h1>
+        
+        <img class="mb-4" src="{{ url_for('static', filename='app_bcel.png') }}" alt="BCEL App" width="150">
+
+        <h2 class="fw-bold">ລາຄາ: <span class="text-danger">100,000 KIP</span></h2>
+    </div>
+
+    <div class="one-click-pay button-pay text-white w-100 p-3 text-center" style="background-color: #ef0000;">
+        <p><b>ຊຳລະຜ່ານ Bcel One</b></p>
+    </div>
+</main>
+
+<script>
+    $(function() {
+        var mcid = "mch667bdd4aaf07a"; // merchant id
+        var shopcode = "tCpJN9pvOwYD"; // shop code
+        var uuid = '{{bill_h.doc_no}}'; // transaction id (please define as unique key)
+        var onePay = new OnePay(mcid); // create new OnePay instance
+        onePay.debug = true; // enable OnPay debug(Please looking on console log)
+
+        /* generate new QR code via onepay.js */
+        onePay.getCode({
+            transactionid: uuid, // please define as unique key
+            invoiceid: '{{bill_h.doc_no}}', // a invoice ID can pay many times OR have many transaction ID
+            terminalid: '001', // terminal ID (in case have many terminals, POS devices or etc...)
+            amount: '{{total_amount}}', // invoice amount
+            description: 'Odienmall_Order:{{bill_h.doc_no}}', // must define as English text
+            expiretime: 5, // expire time must be minutes
+        }, function(code) {
+            $('.qr-code').attr('src', 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + code); // set QR code into image, Scan to pay
+            $('.one-click-pay').attr('href', 'onepay://qr/' + code) // set QR code into button, One click pay(payment link) for mobile app integration
+        });
+
+        /* define subscribe parameter(s) */
+        var subParams = {
+            uuid: uuid, // please specified uuid if would like to receive callback data only the transaction (for front-end subscribe)
+            shopcode: null, // please specified shopcode if would link to receive all callback for the merchant ID (for back-end subscribe)
+            tid: null // please specified tid(terminal ID) and shopcode if would link to receive all callback for the merchant ID and specific terminal (for terminal subscribe)
+        };
+        /* subscribe to receiving OnePay callback*/
+        onePay.subscribe(subParams, function(res) {
+            if (res.uuid === uuid) {
+                document.getElementById("qrcode").style.display = "none";
+                var s = document.getElementById("success");
+                s.style.width = "200px";
+                s.style.height = "200px";
+                const myTimeout = setTimeout(myGreeting, 5000);
+
+                function myGreeting() {
+                    window.location.href = '/thankyoupage/{{bill_h.doc_no}}';
+                }
+            }
+        });
+    })
+</script>
+{% endblock %}

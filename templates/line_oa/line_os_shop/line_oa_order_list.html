@@ -1,0 +1,47 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}Order list{% endblock %}
+
+{% block head %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+        style="background-color: #276FB7;">
+        <button onclick="window.location.href='/line_oa_shop'" class="d-flex justify-content-between align-items-center"
+            type="button" style="background-color: transparent; outline: none; border: none;">
+            <i class="bi bi-chevron-left fs-5 text-white"></i>
+            <span class="text-white">ກັບຄືນ</span>
+        </button>
+        <p class="text-white">ລາຍການສັ່ງຊື້</p>
+            <button class="d-flex justify-content-between align-items-center" type="button"
+                style="background-color: transparent; outline: none; border: none; color: #276FB7;">
+                <i class="bi bi-chevron-left fs-5"></i>
+                <span>ກັບຄືນ</span>
+            </button>
+    </header>
+
+    <div class="d-flex flex-column gap-2 m-2">
+        {% for data in order_list %}
+        <div onclick="window.location.href='/line_oa_order_detail/{{ data.doc_no }}'" class="border rounded sm-shadow bg-white p-2 mt-2" >
+            <h5 class="fw-medium mb-2">ເລກສັ່ງຊື້: {{ data['doc_no'] }}</h5>
+
+            <div class="row">
+                <div class="col">
+                    <p class="mb-1">ລາຄາ: <span class="text-danger">{{ "{:,.0f}".format(data['total_amount_2']) }} KIP</span></p>
+                    <p>ຈຳນວນ: <span>{{ data['total_qty'] | int }}</span></p>
+                </div>
+                <div class="col">
+                    <p class="mb-1 text-white">ສະຖານະ: <span>ສຳເລັດແລ້ວ</span></p>
+                    <p>ວັນທີ່ສັ່ງຊື້: {{ data['doc_date'] }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

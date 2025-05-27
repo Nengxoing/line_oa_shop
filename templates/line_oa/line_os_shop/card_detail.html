@@ -1,0 +1,372 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    .market-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none;
+    }
+
+    #googleMap {
+        height: 400px;
+        width: 100%;
+    }
+
+    #googleMap .gm-style {
+        z-index: 0 !important;
+    }
+
+    #googleMap .custom-map-button {
+        z-index: 1000 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="d-flex justify-content-between align-items-center py-2 px-1 text-center"
+    style="background-color: #276FB7;">
+    <button onclick="window.location.href='/line_oa_shop'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <button id="cardButton" class="text-white"
+        style="background-color: transparent; outline: none; border: none; margin-right: .5rem;">
+        <i class="bi bi-cart-fill fs-4" style="color: #276FB7;"></i>
+    </button>
+</header>
+
+<main class="d-flex flex-column gap-2 p-2 justify-content-between">
+    <div class="d-flex flex-column gap-3">
+
+        <!-- <h5 class="fw-medium">ກະຕ່າຂອງຂ້ອຍ</h5> -->
+
+        <div class="mt-1">
+            <label for="" class="fw-medium mb-1">ຂໍ້ມູນຜູ້ຮັບ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="d-none d-flex justify-content-between">
+                    <p>ລະຫັດສິນຄ້າ</p>
+                    <p id="receiver-docNo">---</p>
+                </div>
+                <hr class="d-none my-2">
+                <div class="d-none d-flex justify-content-between">
+                    <p>ລະຫັດຜູ້ຮັບ</p>
+                    <p id="receiver-code">---</p>
+                </div>
+                <hr class="d-none my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ຊື່ຜູ້ຮັບ</p>
+                    <p id="receiver-name">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ເບີໂທ</p>
+                    <p id="receiver-phone">---</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between">
+                    <p>ທີ່ຢູ່</p>
+                    <p id="receiver-address">---</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ປະເພດການຈັດສົ່ງ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="shippingType" id="shipping-type-delivery"
+                        value="0" checked>
+                    <label class="form-check-label" for="shipping-type-delivery">
+                        ຈັດສົ່ງ
+                    </label>
+                </div>
+                <hr class="p-0 my-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="shippingType" id="shipping-type-pickup"
+                        value="1">
+                    <label class="form-check-label" for="shipping-type-pickup">
+                        ຮັບເອງ
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ລາຍການສິນຄ້າ</label>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <div id="products-list" class="d-flex flex-column gap-3"></div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ລາຄາ</label>
+            <div class="border rounded bg-white p-2">
+                <div class="d-none d-flex justify-content-between">
+                    <p>ລວມລາຄາສິນຄ້າ</p>
+                    <p id="allProductsPrice">---</p>
+                </div>
+                <!-- <hr class="my-2"> -->
+                <div class="d-none d-flex justify-content-between">
+                    <p>ຄ່າຂົນສົ່ງ</p>
+                    <p id="shippingPrice">---</p>
+                </div>
+                <!-- <hr class="my-2"> -->
+                <div class="d-flex justify-content-between">
+                    <p>ລວມທັງໝົດ</p>
+                    <p id="allPrice" class="text-danger fw-bold">---</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="" class="fw-medium mb-1">ໝາຍເຫດ</label>
+            <div class="border bg-white rounded p-2 mb-0 pb-0">
+                <ul style="padding-left: 20px;">
+                    <li style="color: #555;">ສິນຄ້າຊື້ແລ້ວ ບໍສາມາດສົ່ງຄືນໃດ້</li>
+                    <li style="color: #555;">ການຄິດໃລ່ຄ່າຂົນສົ່ງແມ່ນຂື້ນກັບໄລຍາທາງ</li>
+                    <li style="color: #555;">ກະລຸນາກວດສອບລາຍການສິນຄ້າໃຫ້ລະອຽດກ່ອນສັ່ງຊື້</li>
+                </ul>
+            </div>
+        </div>
+
+        <button onclick="sendDataToServer()" class="btn text-white fw-medium mb-3"
+            style="background-color: var(--first-color);">ສັ່ງຊື້ ແລະ ຈ່າຍເງິນ</button>
+    </div>
+</main>
+
+<script>
+
+    window.addEventListener("load", function () {
+        card_detail_get();
+    });
+
+    // ******************************************* products list *******************************************
+    function addDeleteEventListeners() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', deleteItemCard);
+        });
+    }
+
+    function card_detail_get() {
+        fetch("/card_detail_get")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+
+                    console.log("Card detail:", data);
+
+                    const productList = document.getElementById("products-list");
+                    productList.innerHTML = "";
+
+                    document.getElementById("receiver-docNo").textContent = (data.doc_no || "---");
+                    document.getElementById("receiver-code").textContent = (data.user?.code || "---");
+                    document.getElementById("receiver-name").textContent = (data.user?.name || "---");
+                    document.getElementById("receiver-phone").textContent = (data.user?.phone || "---");
+                    document.getElementById("receiver-address").textContent = (data.user?.address || "---");
+
+                    let totalProductPrice = 0;
+                    const shippingPrice = 0;
+
+                    if (data.cart.length === 0) {
+                        document.getElementById("allProductsPrice").textContent = "---";
+                        document.getElementById("shippingPrice").textContent = "---";
+                        document.getElementById("allPrice").textContent = "---";
+                        return;
+                    }
+
+                    data.cart.forEach(item => {
+                        const imgSrc = item.image ? `/static/image/product/${item.image}` : `/static/odm.png`;
+                        const name = item.name;
+                        const price = parseFloat(item.sale_price.replace(/,/g, '')) || 0;
+                        const qty = parseInt(item.qty) || 0;
+                        const formattedPrice = formatPrice(price);
+                        const code = item.market_code;
+
+                        // console.log("price:", price);
+
+                        totalProductPrice += price * qty;
+
+                        const productHTML = `
+                        <div class="bg-white border rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 110px; position: relative;">
+                            <img src="${imgSrc}" alt=""
+                                onerror="this.onerror=null; this.src='/static/odm.png'; this.style.width='100%'; this.style.height='100%'; this.style.objectFit='cover';"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="py-2 px-2 d-flex flex-column justify-content-between">
+                                <p class="market-code" style="margin-right: 10px;">${code}</p>
+                                <p class="market-name" style="margin-right: 10px;">${name}</p>
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <p class="text-danger mb-0 text-start"><b>${formattedPrice} KIP</b></p>
+                                    <p style="font-size: 14px; color: #666;">ຈຳນວນ: <span class="qty">${qty}</span></p>
+                                </div>
+                            </div>
+                            <button class="text-danger delete-btn" data-code="${code}" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;">
+                                <i class="bi bi-x-square-fill"></i>
+                            </button>
+                        </div>`;
+
+                        productList.innerHTML += productHTML;
+                    });
+
+                    const formattedProductTotal = formatPrice(totalProductPrice);
+                    const formattedShipping = shippingPrice > 0 ? formatPrice(shippingPrice) : "---";
+                    const totalAll = totalProductPrice + shippingPrice;
+                    const formattedTotalAll = formatPrice(totalAll);
+
+                    document.getElementById("allProductsPrice").textContent = formattedProductTotal + " KIP";
+                    document.getElementById("shippingPrice").textContent = formattedShipping + " KIP";
+                    document.getElementById("allPrice").textContent = formattedTotalAll + " KIP";
+
+                    addDeleteEventListeners();
+                } else {
+                    console.error("โหลดข้อมูลไม่สำเร็จ");
+                }
+            })
+            .catch(error => {
+                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล:", error);
+            });
+    }
+
+    function formatPrice(price) {
+        return Number(price).toLocaleString('en-US', {
+            minimumFractionDigits: 0
+        });
+    }
+
+    function deleteItemCard(event) {
+        const deleteButton = event.target.closest('.delete-btn');
+        if (!deleteButton) return;
+
+        const marketCode = deleteButton.getAttribute('data-code');
+
+        const productItem = deleteButton.closest('.bg-white');
+        if (productItem) {
+            productItem.remove();
+        }
+
+        fetch('/deleteItemCard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code: marketCode })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "deleted") {
+                    console.log("สินค้าถูกลบเรียบร้อยแล้ว");
+                    card_detail_get();
+                } else {
+                    console.error("ไม่สามารถลบสินค้าได้");
+                }
+            })
+            .catch(error => {
+                console.error("เกิดข้อผิดพลาดในการลบสินค้า:", error);
+            });
+    }
+
+    function sendDataToServer() {
+        const receiverCode = document.getElementById("receiver-code").textContent;
+        const receiverName = document.getElementById("receiver-name").textContent;
+        const receiverPhone = document.getElementById("receiver-phone").textContent;
+        const receiverAddress = document.getElementById("receiver-address").textContent;
+        const shippingType = parseInt(document.querySelector('input[name="shippingType"]:checked').value);
+
+        console.log("receiver-code:", receiverCode);
+        console.log("receiver-name:", receiverName);
+        console.log("receiver-phone:", receiverPhone);
+        console.log("receiver-address:", receiverAddress);
+        console.log("shippingType:", shippingType);
+
+        const productList = document.getElementById("products-list");
+        const productsData = [];
+
+        const productElements = productList.querySelectorAll('.bg-white');
+
+        productElements.forEach(item => {
+            const code = item.querySelector('.market-code').textContent;
+            const name = item.querySelector('.market-name').textContent;
+            const price = item.querySelector('.text-danger').textContent.replace(' KIP', '').replace(/,/g, '');
+            const qty = item.querySelector('.qty').textContent;
+            const imagePath = item.querySelector('img').src;
+
+            const imageName = imagePath.split('/').pop();
+
+            productsData.push({
+                code: code,
+                name: name,
+                price: parseFloat(price),
+                qty: parseInt(qty),
+                image: imageName
+            });
+        });
+
+        const allProductsPrice = document.getElementById("allProductsPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+        const shippingPrice = document.getElementById("shippingPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+        const allPrice = document.getElementById("allPrice").textContent.replace(' KIP', '').replace(/,/g, '');
+        const docNo = document.getElementById("receiver-docNo").textContent;
+
+        console.log("allProductsPrice:", allProductsPrice);
+        console.log("shippingPrice:", shippingPrice);
+        console.log("allPrice:", allPrice);
+
+        const dataToSend = {
+            receiverCode: receiverCode,
+            receiverName: receiverName,
+            receiverPhone: receiverPhone,
+            receiverAddress: receiverAddress,
+            shippingType: shippingType,
+            products: productsData,
+            allProductsPrice: parseFloat(allProductsPrice),
+            shippingPrice: parseFloat(shippingPrice),
+            allPrice: parseFloat(allPrice)
+        };
+
+        console.log("dataToSend:", dataToSend);
+
+        // fetch(`/submit_order/${docNo}`, {
+        fetch(`/submit_order/${docNo}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+            .then(res => res.json())
+            .then(response => {
+                if (response.status === "success") {
+                    window.location.href = `/paymentpage_mb/${response.doc_no}`;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: response.message,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("ส่งข้อมูลไม่สำเร็จ:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'การส่งข้อมูลล้มเหลว',
+                    text: error.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Get Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Get Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&family=Noto+Serif+Lao:wght@100..900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- CSS ของ Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <!-- JavaScript ของ Tom Select -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- google map -->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH2TwvYqjeUu0XZL63nT-FOETUYMwnAkM&libraries=places&callback=myMap"
+        async defer></script>
+
+
+    <!-- From old code -->
+    <link rel="stylesheet" href="https://developers.google.com//maps/documentation/javascript/demos/demos.css">
+
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+    <title>{% block title %}{% endblock %} - ODG Line OA Documents</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Noto Sans Lao", serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin-bottom: 60px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        p {
+            margin-bottom: 0;
+        }
+
+        :root {
+            --bg-color: #f5f5f5;
+            --first-color: #276FB7;
+            --second-color: #F7941D;
+            --third-color: #ffffff;
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+    {% include 'line_oa/line_os_shop/components/footer.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH2TwvYqjeUu0XZL63nT-FOETUYMwnAkM&libraries=places&callback=myMap"
+        async defer></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH2TwvYqjeUu0XZL63nT-FOETUYMwnAkM&libraries=places&callback=storemap"
+        async defer></script>
+    <script>
+        function storemap() {
+            var myLatlng = new google.maps.LatLng(17.970793716256445, 102.60337857116454)
+            var mapProp = {
+                center: myLatlng,
+                zoom: 18,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+            };
+
+            var map = new google.maps.Map(document.getElementById("googleMapStoreMap"), mapProp);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: 'Hello World!'
+            });
+        }
+    </script>
+</body>
+
+</html>

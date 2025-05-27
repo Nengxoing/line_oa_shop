@@ -1,0 +1,606 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    .market-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class=" d-flex justify-content-between py-2 px-1 text-center" style="position: sticky; top: 0; background-color: #276FB7;">
+    <button onclick="window.location.href='/line_optionstaff'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <button id="cardButton" class="text-white"
+        style="background-color: transparent; outline: none; border: none; margin-right: .5rem;">
+        <i class="bi bi-cart-fill fs-4"></i>
+    </button>
+</header>
+
+<main class="d-flex flex-column justify-content-between">
+
+    <div class="p-2 mt-2">
+        <button class="btn fw-medium bg-white shadow-sm w-100"
+            style="background-color: transparent; border: 1px solid var(--first-color); color: var(--first-color);"
+            data-bs-toggle="modal" data-bs-target="#filterProducts">
+            <i class="bi bi-funnel-fill"></i> ຕົວເລືອກສິນຄ້າ
+        </button>
+    </div>
+
+    <!-- Enter qty -->
+    <div class="modal fade" id="selectQty" tabindex="-1" aria-labelledby="selectQty" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--first-color);">
+                    <h1 class="modal-title fs-5 text-white" id="productCardTitle">ເລືອກຈຳນວນສິນຄ້າ</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: var(--bg-color); overflow-y: auto;">
+
+                    <div>
+                        <div class="border shadow-sm rounded bg-white overflow-hidden mb-4"
+                            style="display: grid; grid-template-columns: 40% 1fr; height: 120px;">
+                            <img id="product-img" class="border-end"
+                                src="https://cdn.pixabay.com/photo/2020/05/24/11/24/strawberry-5213787_1280.jpg" alt=""
+                                style="width: 100%; height: 120px; object-fit: cover;">
+                            <div class="p-1 d-flex flex-column justify-content-between">
+                                <p hidden class="market-name" id="product-code"></p>
+                                <p class="market-name" id="product-name"></p>
+                                <div>
+                                    <p class="text-danger mb-0 text-start" id="product-price"><b></b></p>
+                                    <p class="mb-0 text-start" style="color: #666; font-size: 13px;"
+                                        id="product-regularPrice"><b></b></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between border shadow-sm rounded bg-white">
+                            <button id="btn-decrease" class="btn text-white fw-medium"
+                                style="background-color: var(--second-color);">
+                                <i class="bi bi-caret-left-fill"></i>
+                            </button>
+                            <input id="qty-input" type="number" class="form-control text-center"
+                                style="background-color: transparent; border: none; outline: none;" placeholder="ຈຳນວນ"
+                                value="1" min="1">
+                            <button id="btn-increase" class="btn text-white fw-medium"
+                                style="background-color: var(--second-color);">
+                                <i class="bi bi-caret-right-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="background-color: var(--bg-color);">
+                    <button type="button" onclick="addToCard()" class="btn fw-medium w-100 bg-white shadow-sm"
+                        style="border: 1px solid var(--first-color); color: var(--first-color);">
+                        ເພີ່ມເຂົ້າກະຕ່າ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal card -->
+    <div class="modal fade" id="productCard" tabindex="-1" aria-labelledby="productCardTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--first-color);">
+                    <h1 class="modal-title fs-5 text-white" id="productCardTitle">ກະຕ່າສິນຄ້າ</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: var(--bg-color); overflow-y: auto; max-height: 400px;">
+                    <div class="product-card d-flex flex-column gap-4">
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: var(--bg-color);">
+
+                    <h5 id="totalPriceWrapper" class="w-100 mb-3">
+                        <b>ລາຄາທັງໝົດ: <span class="text-danger" id="totalPrice"></span><span class="text-danger">
+                                KIP</span></b>
+                    </h5>
+
+                    <button onclick="window.location.href='/card_detail'" type="button"
+                        class="btn fw-medium w-100 text-white t-3"
+                        style="background-color: var(--second-color);">
+                        ສັ່ງຊື້
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal filter -->
+    <div class="modal fade" id="filterProducts" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--first-color);">
+                    <h1 class="modal-title fs-5 text-white" id="exampleModalLabel">ຕົວເລືອກສິນຄ້າ</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: var(--bg-color);">
+
+                    <!-- filter by price -->
+                    <div class="d-flex gap-2 mb-3">
+                        <div class="form-group w-100">
+                            <label for="smallPrice" class="fw-medium">ລາຄາຕໍ່າສຸດ</label>
+                            <input id="smallPrice" name="smallPrice" type="text" class="form-control shadow-sm"
+                                placeholder="ປ້ອນລາຄາຕໍ່າສຸດ">
+                        </div>
+                        <div class="form-group w-100">
+                            <label for="bigPrice" class="fw-medium">ລາຄາສູງສຸດ</label>
+                            <input id="bigPrice" name="bigPrice" type="text" class="form-control shadow-sm"
+                                placeholder="ປ້ອນລາຄາສູງສຸດ">
+                        </div>
+                    </div>
+
+                    <!-- filter by brand -->
+                    <div class="form-group">
+                        <label for="brand" class="fw-medium">ແບຣນ</label>
+                        <select id="brand" name="brand" class="form-control shadow-sm">
+                            <option value="" selected class="d-none">ເລືອກແບຣນ</option>
+                            {% for data in item_brand %}
+                            <option value="{{ data['item_brand'] }}">{{ data['item_brand'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: var(--bg-color);">
+                    <button type="button" class="btn fw-medium w-100 bg-white shadow-sm" id="filterSubmitBtn"
+                        style="border: 1px solid var(--first-color); color: var(--first-color);"
+                        data-bs-dismiss="modal">
+                        ຄົ້ນຫາ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="product-container" onclick="productDetail(event)">
+        <div class="p-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            {% for data in products_data %}
+            <div class="product-item col d-flex justify-content-between flex-column gap-2 p-1 border rounded shadow-sm bg-white"
+                data-code="{{ data.code }}">
+                <div>
+                    {% if data.url_image == None %}
+                    <img class="product-img" src="/static/odm.png" alt="img"
+                        style="width: 100%; height: auto; object-fit: cover;">
+                    {% else %}
+                    <img class="product-img" src="/static/image/product/{{data.url_image}}" alt="img"
+                        style="width: 100%; height: auto; object-fit: cover;">
+                    {% endif %}
+
+                    <p hidden class="name-code" id="code" style="font-size: 14px;">{{ data['code'] }}</p>
+                    <p class="name-market" style="font-size: 14px;">{{ data['name_market'] }}</p>
+                    <p hidden class="name-unit" style="font-size: 14px;">{{ data['unit'] }}</p>
+                    <p class="sale-price text-danger fw-medium mt-1"><b
+                            class="sale_price">{{"{:,}".format(data.sale_price) }}</b> KIP</p>
+                    <p class="regular-price" style="font-size: 14px;"><s
+                            id="regular_price">{{"{:,}".format(data.regular_price) }}</s> KIP</p>
+                </div>
+                <button
+                    class="btn w-100 text-white fw-medium add-to-cart-btn"
+                    style="background-color: var(--second-color);" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#selectQty"
+                    data-img="{{ '/static/image/product/' + data.url_image if data.url_image else '/static/odm.png' }}"
+                    data-name="{{ data.name_market }}" 
+                    data-sale-price="{{ " {:,}".format(data.sale_price) }}"
+                    data-regular-price="{{ " {:,}".format(data.regular_price) }}" 
+                    data-code="{{ data.code }}">
+                    ເພີ່ມເຂົ້າກະຕ່າ
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</main>
+
+<script>
+
+    function productDetail(event) { 
+        if (event.target.closest('.add-to-cart-btn')) {
+            return;
+        }
+
+        const productItem = event.target.closest(".product-item");
+        if (productItem) {
+            const code = productItem.getAttribute("data-code");
+            console.log("code:", code);
+            window.location.href = `/product_detail?code=${encodeURIComponent(code)}`;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("selectQty");
+        const productImg = modal.querySelector("#product-img");
+        const productName = modal.querySelector("#product-name");
+        const productPrice = modal.querySelector("#product-price");
+        const productRegularPrice = modal.querySelector("#product-regularPrice");
+        const productCode = modal.querySelector("#product-code");
+        const qtyInput = modal.querySelector("input[type='number']");
+        const btnDecrease = modal.querySelector("#btn-decrease");
+        const btnIncrease = modal.querySelector("#btn-increase");
+
+        // ปุ่มกดเพิ่มลดจำนวน
+        btnDecrease.addEventListener("click", function () {
+            let currentQty = parseInt(qtyInput.value);
+            if (!isNaN(currentQty) && currentQty > 1) {
+                qtyInput.value = currentQty - 1;
+            }
+        });
+
+        btnIncrease.addEventListener("click", function () {
+            let currentQty = parseInt(qtyInput.value);
+            if (!isNaN(currentQty)) {
+                qtyInput.value = currentQty + 1;
+            }
+        });
+
+        // ป้องกันจำนวนติดลบจากการพิมพ์เอง
+        qtyInput.addEventListener("input", function () {
+            if (parseInt(qtyInput.value) < 1 || isNaN(parseInt(qtyInput.value))) {
+                qtyInput.value = 1;
+            }
+        });
+
+        // โหลดข้อมูลสินค้าตอนคลิกปุ่ม "ເພີ່ມເຂົ້າກະຕ່າ"
+        document.querySelectorAll(".add-to-cart-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const img = this.getAttribute("data-img");
+                const name = this.getAttribute("data-name");
+                const salePrice = this.getAttribute("data-sale-price");
+                const regularPrice = this.getAttribute("data-regular-price");
+                const code = this.getAttribute("data-code");  // ดึงค่า data-code
+
+                // ใส่ข้อมูลลง modal
+                productImg.src = img;
+                productName.textContent = name;
+                productPrice.innerHTML = `<b>${salePrice} KIP</b>`;
+                productRegularPrice.innerHTML = `<s>${regularPrice} KIP</s>`;
+                productCode.textContent = `${code}`;  // แสดง code ใน modal
+
+                // เซ็ตจำนวนเริ่มต้น
+                qtyInput.value = 1;
+            });
+        });
+    });
+
+    document.getElementById("filterSubmitBtn").addEventListener("click", function () {
+        const smallPrice = document.getElementById("smallPrice").value;
+        const bigPrice = document.getElementById("bigPrice").value;
+        const brand = document.getElementById("brand").value;
+
+        const params = new URLSearchParams({
+            smallPrice: smallPrice,
+            bigPrice: bigPrice,
+            brand: brand
+        });
+
+        fetch("/filter_products?" + params.toString())
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.products);
+
+                const container = document.getElementById("product-container");
+                container.innerHTML = '';
+
+                const grid = document.createElement('div');
+                grid.className = "p-2";
+                grid.style.display = "grid";
+                grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+                grid.style.gap = "1rem";
+
+                if (data.products.length === 0) {
+                    container.innerHTML = '<p>ບໍ່ພົບສິນຄ້າ</p>';
+                    return;
+                }
+
+                data.products.forEach(item => {
+                    const imgSrc = item.url_image ? `/static/image/product/${item.url_image}` : `/static/odm.png`;
+
+                    const html = `
+                        <div class="product-item col d-flex justify-content-between flex-column gap-2 p-1 border rounded shadow-sm bg-white" data-code="${item.code}">
+                                <div>
+                                    <img class="product-img" src="${imgSrc}" alt="img"
+                                        style="width: 100%; height: auto; object-fit: cover;">
+                                    <p hidden class="name-code" style="font-size: 14px;">${item.code}</p>
+                                    <p class="name-market" style="font-size: 14px;">${item.name_market}</p>
+                                    <p class="sale-price text-danger fw-medium mt-1"><b class="sale_price">${formatPrice(item.sale_price)}</b> KIP</p>
+                                    <p class="regular-price" style="font-size: 14px;"><s id="regular_price">${formatPrice(item.regular_price)}</s> KIP</p>
+                                </div>
+                                <button class="btn w-100 text-white fw-medium add-to-cart-btn"
+                                    data-img="${imgSrc}" data-name="${item.name_market}" data-sale-price="${formatPrice(item.sale_price)}" data-regular-price="${formatPrice(item.regular_price)}" data-code="${item.code}"
+                                    style="background-color: var(--second-color);">
+                                    ເພີ່ມເຂົ້າກະຕ່າ
+                                </button>
+                            </div>
+                        `;
+                    grid.innerHTML += html;
+                });
+
+                container.appendChild(grid);
+            });
+
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('en-US');
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // ฟังก์ชันที่ใช้ในการแสดง modal
+        function addToCartBtnClick(event) {
+            const button = event.target;
+            if (button.classList.contains('add-to-cart-btn')) {
+                const imgSrc = button.getAttribute("data-img");
+                const name = button.getAttribute("data-name");
+                const salePrice = button.getAttribute("data-sale-price");
+                const regularPrice = button.getAttribute("data-regular-price");
+                const code = button.getAttribute("data-code");
+
+                // อัพเดทข้อมูลใน modal
+                document.getElementById("product-img").src = imgSrc;
+                document.getElementById("product-name").textContent = name;
+                document.getElementById("product-price").innerHTML = `<b>${salePrice}</b> KIP`;
+                document.getElementById("product-regularPrice").innerHTML = `<s>${regularPrice} KIP</s>`;
+                document.getElementById("product-code").textContent = code;
+
+                // ใช้ Bootstrap Modal ในการเปิด modal
+                const selectQtyModal = new bootstrap.Modal(document.getElementById("selectQty"));
+                selectQtyModal.show();
+            }
+        }
+
+        const productContainer = document.getElementById("product-container");
+        productContainer.addEventListener("click", addToCartBtnClick);
+    });
+
+    document.getElementById("cardButton").addEventListener("click", () => {
+        fetch("/getAddToCard")
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === "success") {
+                    if (result.cart.length === 0) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'ກະຕ່າວ່າງ!',
+                            text: 'ທ່ານຍັງບໍ່ໄດ້ເລືອກສິນຄ້າ!',
+                            confirmButtonText: 'ຕົກລົງ',
+                            confirmButtonColor: '#276FB7'
+                        });
+                    } else {
+                        const modal = new bootstrap.Modal(document.getElementById("productCard"));
+                        modal.show();
+                        updateCartUI();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("❌ Error checking cart:", error);
+            });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const formatNumber = (input) => {
+            let value = input.value.replace(/,/g, "");
+            if (!isNaN(value) && value !== "") {
+                input.value = Number(value).toLocaleString();
+            }
+        };
+
+        document.getElementById("smallPrice").addEventListener("input", function () {
+            formatNumber(this);
+        });
+
+        document.getElementById("bigPrice").addEventListener("input", function () {
+            formatNumber(this);
+        });
+    });
+
+    document.addEventListener("htmx:configRequest", function (event) {
+        console.log("HTMX Request Parameters:", event.detail.parameters);
+    });
+
+    window.onload = function () {
+        updateCartUI();
+    };
+
+    function addToCard() {
+        const modal = document.getElementById("selectQty");
+
+        const productImg = document.getElementById("product-img");
+        const product_code = document.getElementById("product-code");
+        const productName = document.getElementById("product-name");
+        const productPrice = document.getElementById("product-price");
+        const productRegularPrice = document.getElementById("product-regularPrice");
+        const qtyInput = document.getElementById("qty-input");
+
+        const name = productName.textContent;
+        const salePrice = productPrice.textContent.replace(" KIP", "").replace(/,/g, "").trim();
+        const regularPrice = productRegularPrice.textContent.replace(" KIP", "").replace(/,/g, "").trim();
+        const qty = parseInt(qtyInput.value);
+        const image = productImg.getAttribute("src");
+        const code = product_code.textContent.trim();
+
+        const data = {
+            name: name,
+            sale_price: salePrice,
+            regular_price: regularPrice,
+            qty: qty,
+            image: image,
+            code: code
+        };
+
+        fetch("/addToCard", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(response => {
+                console.log("🛒 Server response:", response);
+                if (response.status === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "ສຳເລັດ",
+                        text: 'ເພິ່ມເພີ່ມສິນຄ້າເຂົ້າກະຕ່າແລ້ວ!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    updateCartUI();
+                } else {
+                    Swal.fire({
+                        title: 'ຜິດພາດ!',
+                        text: '❌ ເກີດຂໍ້ຜິດພາດ: ' + response.message,
+                        icon: 'error',
+                        confirmButtonText: 'ຕົກລົງ'
+                    });
+                }
+
+                qtyInput.value = 1;
+            })
+            .catch(error => {
+                console.error("❌ Error sending to server:", error);
+                Swal.fire({
+                    title: 'ຜິດພາດ!',
+                    text: '❌ ບໍ່ສາມາດສົ່ງຂໍ້ມູນໄປ server ໄດ້',
+                    icon: 'error',
+                    confirmButtonText: 'ຕົກລົງ'
+                });
+            });
+    }
+
+    document.addEventListener('hidden.bs.modal', function (event) {
+        document.body.classList.remove('modal-open');
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    });
+
+    $('#selectQty').on('hidden.bs.modal', function () {
+        const qtyInput = document.getElementById("qty-input");
+        qtyInput.value = 1;
+    });
+
+    function updateCartUI(callback) {
+        fetch("/getAddToCard")
+            .then(response => response.json())
+            .then(result => {
+                const modalBody = document.querySelector(".product-card");
+                const totalPriceWrapper = document.getElementById("totalPriceWrapper");
+                modalBody.innerHTML = "";
+
+                if (result.status === "success") {
+                    if (result.cart.length === 0) {
+                        modalBody.innerHTML = `<p class="text-center text-muted mb-0">ທ່ານຍັງບໍ່ໄດ້ເລືອກສິນຄ້າ!</p>`;
+                        document.getElementById("totalPrice").innerText = "0";
+                        totalPriceWrapper.style.display = "none";
+
+                        if (typeof callback === "function") {
+                            callback(true);
+                        }
+
+                        return;
+                    } else {
+                        totalPriceWrapper.style.display = "block";
+                        if (typeof callback === "function") {
+                            callback(false);
+                        }
+                    }
+
+                    let totalPrice = 0;
+
+                    result.cart.forEach(item => {
+                        const qty = parseInt(item.qty) || 1;
+                        const salePriceNum = parseFloat(item.sale_price.replace(/,/g, '')) || 0;
+                        const subtotal = salePriceNum * qty;
+                        totalPrice += subtotal;
+
+                        const formattedPrice = salePriceNum.toLocaleString();
+                        const imageUrl = item.image?.trim()
+                            ? `/static/image/product/${item.image}`
+                            : `/static/odm.png`;
+
+                        const cartItemHTML = `
+                        <div class="bg-white border shadow-sm rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 110px; position: relative;">
+                            <img class="border-end" src="${imageUrl}" alt=""
+                                onerror="this.onerror=null; this.src='/static/odm.png'; this.style.width='100%'; this.style.height='100%'; this.style.objectFit='cover';"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="py-2 px-2 d-flex flex-column justify-content-between">
+                                <p class="market-name" style="margin-right: 5px;">${item.name}</p>
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <p class="text-danger mb-0 text-start"><b>${formattedPrice} KIP</b></p>
+                                    <p style="font-size: 14px; color: #666;">ຈຳນວນ: <span class="qty">${qty}</span></p>
+                                </div>
+                            </div>
+                            <button class="text-danger delete-btn" data-code="${item.market_code}" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;">
+                                <i class="bi bi-x-square-fill"></i>
+                            </button>
+                        </div>
+                    `;
+
+                        modalBody.insertAdjacentHTML("beforeend", cartItemHTML);
+                    });
+
+                    document.getElementById("totalPrice").innerText = totalPrice.toLocaleString();
+
+                    addDeleteEvents();
+                }
+            })
+            .catch(error => console.error("❌ Error fetching cart data:", error));
+    }
+
+    function addDeleteEvents() {
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const code = this.getAttribute("data-code");
+                deleteCard(code);
+            });
+        });
+    }
+
+    function deleteCard(code) {
+        fetch("/deleteCard", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ code: code })
+        })
+            .then(response => response.json())
+            .then(() => {
+                updateCartUI((isEmpty) => {
+                    if (isEmpty) {
+                        const modalEl = document.getElementById("productCard");
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("❌ Error deleting card item:", error));
+    }
+</script>
+{% endblock %}

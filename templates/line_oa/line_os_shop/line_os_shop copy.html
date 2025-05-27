@@ -1,0 +1,177 @@
+{% extends "line_oa/line_os_shop/layouts/layout.html" %}
+
+{% block title %}SHOP{% endblock %}
+
+{% block head %}
+<style>
+    #market_name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class=" d-flex justify-content-between py-2 px-1 text-center" style="background-color: #276FB7;">
+    <button onclick="window.location.href='/line_optionstaff'" class="d-flex justify-content-between align-items-center"
+        type="button" style="background-color: transparent; outline: none; border: none;">
+        <i class="bi bi-chevron-left fs-5 text-white"></i>
+        <span class="text-white">ກັບຄືນ</span>
+    </button>
+
+    <button data-bs-toggle="modal" data-bs-target="#productCard" class="text-white" style="background-color: transparent; outline: none; border: none; margin-right: .5rem;">
+        <i class="bi bi-cart-fill fs-4"></i>
+    </button>
+</header>
+
+<main class="d-flex flex-column justify-content-between">
+
+    <div class="p-2 mt-2">
+        <button class="btn fw-medium bg-white shadow-sm w-100"
+            style="background-color: transparent; border: 1px solid var(--first-color); color: var(--first-color);"
+            data-bs-toggle="modal" data-bs-target="#filterProducts">
+            <i class="bi bi-funnel-fill"></i> ຕົວເລືອກສິນຄ້າ
+        </button>
+    </div>
+
+    <!-- Modal card -->
+    <div class="modal fade" id="productCard" tabindex="-1" aria-labelledby="productCardTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--first-color);">
+                    <h1 class="modal-title fs-5 text-white" id="productCardTitle">ກະຕ່າສິນຄ້າ</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column gap-4" style="background-color: var(--bg-color);">
+                    <div class="bg-white border shadow-sm rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 100px; position: relative;">
+                        <img src="https://cdn.pixabay.com/photo/2023/11/10/10/19/cheese-8379082_1280.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="py-1 px-2 d-flex flex-column justify-content-between">
+                            <p id="market_name" style="margin-right: 5px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, facilis?</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <p class="text-danger mb-0 text-start"><b>195,000 KIP</b></p>
+                                <p style="font-size: 14px; color: #666;">ຈຳນວນ: <span id="aty">2</span></p>
+                            </div>
+                        </div>
+                        <button id="deleteProduct" class="text-danger" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;"><i class="bi bi-x-square-fill"></i></button>
+                    </div>
+                    <div class="bg-white border shadow-sm rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 100px; position: relative;">
+                        <img src="https://cdn.pixabay.com/photo/2023/11/10/10/19/cheese-8379082_1280.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="py-1 px-2 d-flex flex-column justify-content-between">
+                            <p id="market_name" style="margin-right: 5px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, facilis?</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <p class="text-danger mb-0 text-start"><b>195,000 KIP</b></p>
+                                <p style="font-size: 14px; text-align: end; color: #666;">ຈຳນວນ: <span id="aty">2</span></p>
+                            </div>
+                        </div>
+                        <button id="deleteProduct" class="text-danger" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;"><i class="bi bi-x-square-fill"></i></button>
+                    </div>
+                    <div class="bg-white border shadow-sm rounded overflow-hidden" style="display: grid; grid-template-columns: 30% 1fr; height: 100px; position: relative;">
+                        <img src="https://cdn.pixabay.com/photo/2023/11/10/10/19/cheese-8379082_1280.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="py-1 px-2 d-flex flex-column justify-content-between">
+                            <p id="market_name" style="margin-right: 5px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, facilis?</p>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <p class="text-danger mb-0 text-start"><b>195,000 KIP</b></p>
+                                <p style="font-size: 14px; text-align: end; color: #666;">ຈຳນວນ: <span id="aty">2</span></p>
+                            </div>
+                        </div>
+                        <button id="deleteProduct" class="text-danger" style="background-color: transparent; border: none; outline: none; position: absolute; right: 4px; top: 1px;"><i class="bi bi-x-square-fill"></i></button>
+                    </div>
+                    <h5><b>ລາຄາທັງໝົດ:</b> <span id="total" class="text-danger"><b>585,000 KIP</b></span></p>
+                </div>
+                <div class="modal-footer" style="background-color: var(--bg-color);">
+                    <button type="button" class="btn fw-medium w-100 bg-white shadow-sm"
+                        style="border: 1px solid var(--first-color); color: var(--first-color);">
+                        ສັ່ງຊື້
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal filter -->
+    <div class="modal fade" id="filterProducts" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--first-color);">
+                    <h1 class="modal-title fs-5 text-white" id="exampleModalLabel">ຕົວເລືອກສິນຄ້າ</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: var(--bg-color);">
+
+                    <!-- filter by price -->
+                    <div class="d-flex gap-2 mb-3">
+                        <div class="form-group w-100">
+                            <label for="smallPrice" class="fw-medium">ລາຄາຕໍ່າສຸດ</label>
+                            <input id="smallPrice" name="smallPrice" type="text" class="form-control shadow-sm"
+                                placeholder="ປ້ອນລາຄາຕໍ່າສຸດ">
+                        </div>
+                        <div class="form-group w-100">
+                            <label for="bigPrice" class="fw-medium">ລາຄາສູງສຸດ</label>
+                            <input id="bigPrice" name="bigPrice" type="text" class="form-control shadow-sm"
+                                placeholder="ປ້ອນລາຄາສູງສຸດ">
+                        </div>
+                    </div>
+
+                    <!-- filter by brand -->
+                    <div class="form-group">
+                        <label for="brand" class="fw-medium">ແບຣນ</label>
+                        <select id="brand" name="brand" class="form-control shadow-sm">
+                            <option value="" selected class="d-none">ເລືອກແບຣນ</option>
+                            <option value="HANABISHI">HANABISHI</option>
+                            <option value="KASHIWA">KASHIWA</option>
+                            <option value="MIDEA">MIDEA</option>
+                            <option value="OXYGEN">OXYGEN</option>
+                            <option value="PHILIPS">PHILIPS</option>
+                            <option value="SHARP">SHARP</option>
+                            <option value="SMART HOME">SMART HOME</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: var(--bg-color);">
+                    <button type="button" class="btn fw-medium w-100 bg-white shadow-sm" hx-get="/filter_products"
+                        hx-target="#product-container" hx-indicator="#loading-indicator"
+                        hx-include="[name='smallPrice'], [name='bigPrice'], [name='brand']" data-bs-dismiss="modal"
+                        style="border: 1px solid var(--first-color); color: var(--first-color);">
+                        ຄົ້ນຫາ
+                    </button>
+
+                    <!-- Loading indicator -->
+                    <div id="loading-indicator" style="display: none;">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="product-container">
+        {% include "line_oa/line_os_shop/product_list.html" %}
+    </div>
+
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const formatNumber = (input) => {
+            let value = input.value.replace(/,/g, "");
+            if (!isNaN(value) && value !== "") {
+                input.value = Number(value).toLocaleString();
+            }
+        };
+
+        document.getElementById("smallPrice").addEventListener("input", function () {
+            formatNumber(this);
+        });
+
+        document.getElementById("bigPrice").addEventListener("input", function () {
+            formatNumber(this);
+        });
+    });
+
+    document.addEventListener("htmx:configRequest", function (event) {
+        console.log("HTMX Request Parameters:", event.detail.parameters);
+    });
+</script>
+{% endblock %}

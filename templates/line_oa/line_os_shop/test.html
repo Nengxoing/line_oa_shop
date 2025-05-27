@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Horizontal Button Accordion</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+  <!-- ปุ่มแนวนอน -->
+  <div class="btn-group mb-3" role="group" aria-label="Horizontal buttons">
+    <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#info1">ข้อมูล 1</button>
+    <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#info2">ข้อมูล 2</button>
+  </div>
+
+  <!-- กลุ่มข้อมูลทั้งหมดต้องอยู่ในกล่องเดียวกัน -->
+  <div id="infoGroup">
+    <div class="collapse" id="info1" data-bs-parent="#infoGroup">
+      <div class="card card-body mb-2">
+        รายละเอียดของข้อมูล 1 เช่น รายชื่อ, รายละเอียดเพิ่มเติม
+      </div>
+    </div>
+    <div class="collapse" id="info2" data-bs-parent="#infoGroup">
+      <div class="card card-body mb-2">
+        รายละเอียดของข้อมูล 2 เช่น รายชื่อ, รายละเอียดเพิ่มเติม
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
